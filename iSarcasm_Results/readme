@@ -1,0 +1,63 @@
+Results in this file are obtained by splitting the data set into train and validation sets. The NN architecture for these results are as follows:
+
+class SentimentRNN(nn.Module):
+    def __init__(self,no_layers,vocab_size,hidden_dim,embedding_dim,drop_prob=0.1):
+        super(SentimentRNN,self).__init__()
+
+        self.output_dim = output_dim
+        self.hidden_dim = hidden_dim
+        self.no_layers = no_layers
+        self.vocab_size = vocab_size
+        self.drop_prob = drop_prob
+
+    # Embedding Layer
+        self.embedding = nn.Embedding(vocab_size, embedding_dim)
+
+    # LSTM Layers
+        self.lstm = nn.LSTM(input_size=embedding_dim,hidden_size=self.hidden_dim,
+                            num_layers=no_layers, batch_first=True, 
+                            dropout=self.drop_prob)
+
+    # Dropout layer
+        self.dropout = nn.Dropout(drop_prob)
+
+    # Linear and Sigmoid layer
+        self.fc = nn.Linear(self.hidden_dim, output_dim)
+        self.sig = nn.Sigmoid()
+      
+    def forward(self,x,hidden):
+        batch_size = x.size(0)
+
+    # Embedding out
+        embeds = self.embedding(x)
+    #Shape: [batch_size x max_length x embedding_dim]
+
+    # LSTM out
+        lstm_out, hidden = self.lstm(embeds, hidden)
+    # Shape: [batch_size x max_length x hidden_dim]
+
+    # Select the activation of the last Hidden Layer
+        #lstm_out = lstm_out[:,-1,:].contiguous()
+    # Shape: [batch_size x hidden_dim]
+
+    ## You can instead average the activations across all the times
+        lstm_out = torch.mean(lstm_out, 1).contiguous()
+
+    # Dropout and Fully connected layer
+        out = self.dropout(lstm_out)
+        out = self.fc(out)
+
+    # Sigmoid function
+        sig_out = self.sig(out)
+
+    # return last sigmoid output and hidden state
+        return sig_out, hidden
+
+    def init_hidden(self, batch_size):
+        ''' Initializes hidden state '''
+    # Create two new tensors with sizes n_layers x batch_size x hidden_dim,
+    # initialized to zero, for hidden state and cell state of LSTM
+        h0 = torch.zeros((self.no_layers,batch_size,self.hidden_dim)).to(device)
+        c0 = torch.zeros((self.no_layers,batch_size,self.hidden_dim)).to(device)
+        hidden = (h0,c0)
+        return hidden
