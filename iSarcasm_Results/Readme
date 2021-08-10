@@ -1,4 +1,24 @@
-Results in this file are obtained by splitting the data set into train and validation sets. The NN architecture for these results are as follows:
+Results in this file are obtained by splitting the data set into train and validation sets. The NN architecture and parameter space for these results are as follows:
+
+# Parameters of our network
+
+# Size of our vocabulary
+vocab_size = num_words_dict
+
+# Embedding dimension
+embedding_dim = 32
+
+# Number of stacked LSTM layers
+no_layers = [2,4,8]
+
+# Dimension of the hidden layer in LSTMs
+hidden_dim = [32,64,128]
+
+# Dropout parameter for regularization
+output_dim = 1
+
+# Dropout parameter for regularization
+drop_prob = 0.25
 
 class SentimentRNN(nn.Module):
     def __init__(self,no_layers,vocab_size,hidden_dim,embedding_dim,drop_prob=0.1):
