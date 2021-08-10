@@ -1,4 +1,4 @@
-Results in this file are obtained by splitting the data set into train and validation sets. The NN architecture and parameter space for these results are as follows:
+Results in this file are obtained by splitting the dataset into train and validation sets. The NN architecture and parameter space for these results are as follows:
 
 # Parameters of our network
 
